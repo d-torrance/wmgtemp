@@ -1,0 +1,68 @@
+wmgtemp (0.5-4) unstable; urgency=low
+
+  * Typo fixed in the description.                  (closes: Bug#125492)
+  * Upgraded Standards-Version.
+
+ -- Lenart Janos <ocsi@debian.org>  Sat, 22 Dec 2001 16:25:10 +0100
+
+wmgtemp (0.5-3) unstable; urgency=low
+
+  * Added Build-Depends: xlibs-dev.                 (closes: Bug#123153)
+
+ -- Lenart Janos <ocsi@debian.org>  Mon, 10 Dec 2001 22:08:12 +0100
+
+wmgtemp (0.5-2) unstable; urgency=low
+
+  * Fixed menu by Josip Rodin <joy@debian.org>.     (closes: Bug#119945)
+  * Emacs-thingy removed from this changelog.
+
+ -- Lenart Janos <ocsi@debian.org>  Sat, 17 Nov 2001 13:04:58 +0100
+
+wmgtemp (0.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Lenart Janos <ocsi@debian.org>  Tue, 12 Jun 2001 21:08:31 +0200
+
+wmgtemp (0.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added suggestion against i2c-source.
+  * Added example.
+  * Changed description.
+
+ -- Lenart Janos <ocsi@debian.org>  Tue, 17 Apr 2001 21:17:39 +0200
+
+wmgtemp (0.3-3) unstable; urgency=low
+
+  * Upgraded Standards-Version.
+  * Converted to use debhelper v3.
+
+ -- Lenart Janos <ocsi@debian.org>  Sat, 31 Mar 2001 18:45:23 +0200
+
+wmgtemp (0.3-2) unstable; urgency=low
+
+  * Added manpage, currently in the diff only.       (closes: Bug#88697)
+  * Removed dh_testversion from debian/rules.
+
+ -- Lenart Janos <ocsi@debian.org>  Wed, 28 Mar 2001 21:11:00 +0200
+
+wmgtemp (0.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * Makefile's patch removed from diff since it's now included in the
+    upstream.
+
+ -- Lenart Janos <ocsi@debian.org>  Tue,  6 Mar 2001 05:54:28 +0100
+
+wmgtemp (0.1-1.1) unstable; urgency=medium
+
+  * Moved from /usr/X11R6/bin to /usr/bin
+
+ -- Lenart Janos <ocsi@debian.org>  Sat, 24 Feb 2001 17:28:02 +0100
+
+wmgtemp (0.1-1) unstable; urgency=low
+
+  * Initial Release.                                 (closes: Bug#87146)
+
+ -- Lenart Janos <ocsi@debian.org>  Fri, 23 Feb 2001 00:29:54 +0100

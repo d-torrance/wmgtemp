@@ -1,0 +1,7 @@
+wmgtemp for Debian
+------------------
+
+Currently it works for (some) i386 only, if you tested it with other
+architecture(s), and it worked, please notify me.
+
+ -- Lenart Janos <ocsi@debian.org>, Fri, 23 Feb 2001 00:29:54 +0100

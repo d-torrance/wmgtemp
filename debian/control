@@ -1,0 +1,20 @@
+Source: wmgtemp
+Section: utils
+Priority: optional
+Maintainer: Lenart Janos <ocsi@debian.org>
+Build-Depends: debhelper (>> 3.0.0), libsensors-dev, xlibs-dev
+Standards-Version: 3.5.6.0
+
+Package: wmgtemp
+Architecture: i386
+Depends: ${shlibs:Depends}
+Suggests: i2c-source
+Description: Temperature sensor dockapp for WindowMaker
+ It displays the CPU and SYS temperatures (both in numerically and
+ graphically) of motherboards with the VIA686A chipset primarily but
+ also supports some other sensors, including W83781D, W83627HF and
+ AS99127F. There is also intention of adding support for other chipsets
+ in the future.
+ .
+ You will need a kernel compiled with i2c capabilities to make this work,
+ use the i2c-source package to make it for yourself.
