@@ -44,9 +44,10 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs TODO
+	chmod -x examples/wmgtemprc
 	dh_installexamples examples/wmgtemprc
 	dh_installmenu
-	dh_installman debian/local/wmgtemp.1
+	dh_installman wmgtemp.1
 	dh_installchangelogs 
 	dh_link
 	dh_strip
@@ -59,4 +60,5 @@ binary-arch: build install
 	dh_builddeb
 
 binary: binary-indep binary-arch
+
 .PHONY: build clean binary-indep binary-arch binary install configure

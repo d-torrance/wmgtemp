@@ -1,7 +1,9 @@
 wmgtemp for Debian
 ------------------
 
-Currently it works for (some) i386 only, if you tested it with other
-architecture(s), and it worked, please notify me.
+WARNING: it is tested to work only with (some) i386 only. Although it's
+Arch: any, there is no *ANY* guarantee that it will not toast your box.
 
- -- Lenart Janos <ocsi@debian.org>, Fri, 23 Feb 2001 00:29:54 +0100
+If it's worked for your (non-i386) architecture, please notify me.
+
+ -- Lenart Janos <ocsi@debian.org>, Sun, 21 Mar 2004 13:02:51 +0100

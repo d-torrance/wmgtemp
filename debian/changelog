@@ -1,3 +1,54 @@
+wmgtemp (0.6-3) unstable; urgency=high
+
+  * Linking to libsensors3.                         (closes: Bug#237348)
+  * Changed Arch: to any. Dep: will do it (I hope). (closes: Bug#238252)
+
+ -- Lenart Janos <ocsi@debian.org>  Sun, 21 Mar 2004 12:57:14 +0100
+
+wmgtemp (0.6-2) unstable; urgency=medium
+
+  * lm-sensors moved to Depends: in order to be sure /etc/sensors.conf
+    exists, closes: #201762
+  * Rebuild should have fixed the wacky Depends: on libsensors-1debian1,
+    closes: #211081
+  * Lot's of thank to Joy for his great work on wmgtemp while I am away.
+    closes: #191538, #197022, #185512, #185513, #185514.
+
+ -- Lenart Janos <ocsi@debian.org>  Fri, 26 Dec 2003 12:05:27 +0100
+
+wmgtemp (0.6-1.2) unstable; urgency=high
+
+  * Non-maintainer upload, to recompile against proper libsensors-dev
+    and eliminate obsoleted libsensors1 dependency, closes: #197022.
+
+ -- Josip Rodin <joy-packages@debian.org>  Fri, 27 Jun 2003 19:00:47 +0200
+
+wmgtemp (0.6-1.1) unstable; urgency=low
+
+  * Non-maintainer upload, approved by the maintainer.
+  * Recompiled against the new libsensors-dev, plus a little patch
+    to remove a multi-line string in printf which doesn't work with
+    new GCC, closes: #191538.
+  * Updated upstream URL, closes: #185514.
+  * Removed the duplication in the manual page and (after cross-checking)
+    merged it into the upstream file, closes: #185513.
+  * Remove mention of chips from the description since that code was
+    removed, it's now generic.
+  * Use temp1 for system and temp2 for processor temperature with via686a,
+    like the old version did, closes: #185512.
+    I've got an Abit KG7, the author has Abit KT7 -- these two boards should
+    have the same south bridge (VIA 686B), so if the settings really differ,
+    then the whole idea of guessing which sensor is which seems rather
+    pointless :(
+
+ -- Josip Rodin <joy-packages@debian.org>  Tue, 10 Jun 2003 14:46:15 +0200
+
+wmgtemp (0.6-1) unstable; urgency=low
+
+  * New upstream release.                           (closes: Bug#169498)
+
+ -- Lenart Janos <ocsi@debian.org>  Tue, 11 Mar 2003 21:36:57 +0100
+
 wmgtemp (0.5-4) unstable; urgency=low
 
   * Typo fixed in the description.                  (closes: Bug#125492)

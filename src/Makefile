@@ -2,7 +2,7 @@ CC      = gcc
 INSTALL = /usr/bin/install
 LDFLAGS = -L/usr/X11R6/lib -lXpm -lXext -lX11 -lsensors
 BINARY  = wmgtemp
-CCFLAGS = -Wall
+CCFLAGS = -Wall -g
 INSTDIR = /usr/local/bin
 
 OFILES  = wmgtemp.o \
@@ -17,7 +17,7 @@ $(BINARY): $(OFILES)
 	$(CC) $(OFILES) $(LDFLAGS) -o $(BINARY)
 
 clean:
-	@ $(RM) $(OFILES) *~ "#"* $(BINARY)
+	$(RM) $(OFILES) *~ "#"* $(BINARY)
 
 install::
 	$(INSTALL) -m 755 -c $(BINARY) $(INSTDIR)/$(BINARY)

@@ -32,16 +32,9 @@ Interface Features:
 	be rescaled back to normal size.
 
 Supported Sensors:
-	  VIA686A
-	  W83781D
-	  W83627HF
-	  AS99127F
-	  ADM1021
+	  Unlike other versions, this version tries to auto detects sensors.
+	  This means it should work with any sensors that lm_sensors supports.
 
-	  The only sensors that I have personally tested this app with is
-	  the VIA686A. Any other sensors are either guesses or submitted
-	  by other users. If you have any problems with any sensors
-	  let me know and i'll see what I can do.
 
 
 Send any bug reports and ideas to:
