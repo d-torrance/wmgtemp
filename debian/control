@@ -1,7 +1,7 @@
 Source: wmgtemp
 Section: utils
 Priority: optional
-Maintainer: Lenart Janos <ocsi@debian.org>
+Maintainer: Debian QA Group <packages@qa.debian.org>
 Build-Depends: debhelper (>> 3.0.0), libsensors-dev, libx11-dev, libxext-dev, libxpm-dev
 Standards-Version: 3.6.1.0
 
