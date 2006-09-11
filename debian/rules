@@ -1,30 +1,21 @@
 #!/usr/bin/make -f
-# debian/rules for wmgtemp by Lenart Janos.
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
+# debian/rules for wmgtemp, by Josip Rodin
+# based on files by Joey Hess and Janos Lenart.
 
-# Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This is the debhelper compatability version to use.
-export DH_COMPAT=3
+export DH_COMPAT=5
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	touch configure-stamp
+build: src/wmgtemp
 
-build: configure-stamp build-stamp
-build-stamp:
+src/wmgtemp: src/Makefile
 	dh_testdir
 	$(MAKE) depend
 	$(MAKE)
-	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp
 	$(MAKE) clean
 	dh_clean
 
@@ -33,23 +24,18 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs usr/bin
-	$(MAKE) install INSTDIR=$(CURDIR)/debian/wmgtemp/usr/bin
+	$(MAKE) install INSTDIR=$(CURDIR)/debian/wmgtemp/usr/bin MANINSTDIR=$(CURDIR)/debian/wmgtemp/usr/share/man/man1
 
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
+binary-indep:
 
-# Build architecture-dependent files here.
 binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs TODO
+	dh_installchangelogs
 	chmod -x examples/wmgtemprc
 	dh_installexamples examples/wmgtemprc
 	dh_installmenu
-	dh_installman wmgtemp.1
-	dh_installchangelogs 
-	dh_link
 	dh_strip
 	dh_compress
 	dh_fixperms
@@ -61,4 +47,4 @@ binary-arch: build install
 
 binary: binary-indep binary-arch
 
-.PHONY: build clean binary-indep binary-arch binary install configure
+.PHONY: build clean binary-indep binary-arch binary install

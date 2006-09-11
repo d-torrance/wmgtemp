@@ -1,9 +1,0 @@
-wmgtemp for Debian
-------------------
-
-WARNING: it is tested to work only with (some) i386 only. Although it's
-Arch: any, there is no *ANY* guarantee that it will not toast your box.
-
-If it's worked for your (non-i386) architecture, please notify me.
-
- -- Lenart Janos <ocsi@debian.org>, Sun, 21 Mar 2004 13:02:51 +0100

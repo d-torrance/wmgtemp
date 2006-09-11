@@ -1,3 +1,15 @@
+wmgtemp (0.7-1) unstable; urgency=low
+
+  * New upstream version.
+    + Obsoleted the patch that was added to fix #185512, since a run-time
+      option for swapping temperatures now exists.
+    + Obsoleted the patch that fixed a multi-line string in printf.
+    + Obsoleted/updated the patch for the manual page to avoid listing
+      chipsets and instead point to lm_sensors manuals, and fix typos.
+  * Cleaned up the packaging a bit.
+
+ -- Josip Rodin <joy-packages@debian.org>  Mon, 11 Sep 2006 02:14:31 +0200
+
 wmgtemp (0.6-5) unstable; urgency=low
 
   * Adopting the package, closes: #349201.

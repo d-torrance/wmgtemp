@@ -2,16 +2,17 @@ Source: wmgtemp
 Section: utils
 Priority: optional
 Maintainer: Josip Rodin <joy-packages@debian.org>
-Build-Depends: debhelper (>> 3.0.0), libsensors-dev, libx11-dev, libxext-dev, libxpm-dev
-Standards-Version: 3.6.1.0
+Build-Depends: debhelper (>> 5), libsensors-dev, libx11-dev, libxext-dev, libxpm-dev
+Standards-Version: 3.6.1
 
 Package: wmgtemp
 Architecture: any
 Depends: ${shlibs:Depends}, lm-sensors
 Suggests: i2c-source
 Description: Temperature sensor dockapp for Window Maker
- wmgtemp displays the CPU and SYS temperatures (both numerically and
- graphically) of motherboards with support for lm_sensors.
+ wmgtemp is a dock app (a 64x64 window) which graphically displays the
+ CPU and SYS temperatures of motherboards supported by lm_sensors.
  .
- You will need I2C support to make this work, use the i2c-source
- package to set it up.
+ To make wmgtemp work, one needs to set up lm_sensors and I2C.
+ On Debian systems, the lm-sensors-source and i2c-source packages
+ are used to set these up.

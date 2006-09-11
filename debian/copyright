@@ -1,13 +1,12 @@
 This package was debianized by Lenart Janos <ocsi@debian.org> on
 Fri, 23 Feb 2001 00:29:54 +0100.
+It is currently maintained by Josip Rodin <joy-packages@debian.org>.
 
 The original source can be found at: http://www.fluxcode.net/
 
-Upstream Author: Roger Dunce <kronos@fluxcode.net>
-
-Copyright:
+Upstream author: Roger Dunce <kronos@fluxcode.net>
 
 You may distribute this program under the terms of the Artistic License.
 
-On Debian GNU/Linux systems, the complete text of the Artistic License
-can be found in `/usr/share/common-licenses/Artistic'.
+On Debian systems, the complete text of the Artistic License
+can be found in /usr/share/common-licenses/Artistic.
