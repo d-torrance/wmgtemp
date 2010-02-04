@@ -1,0 +1,17 @@
+#
+# Description: Add missing '('
+# Author: Dario Minnucci <midget@debian.org>
+#
+Index: wmgtemp-0.8/src/wmgtemp.c
+===================================================================
+--- wmgtemp-0.8.orig/src/wmgtemp.c	2010-02-04 07:05:26.607533083 +0100
++++ wmgtemp-0.8/src/wmgtemp.c	2010-02-04 07:06:11.023941440 +0100
+@@ -627,7 +627,7 @@
+   FILE *config_file;
+   int res;
+ 
+-  config_file = fopen"/etc/sensors.conf", "r");
++  config_file = fopen("/etc/sensors.conf", "r");
+ 
+   if(config_file == NULL) {
+     fprintf(stderr, "Error opening /etc/sensors.conf\n");

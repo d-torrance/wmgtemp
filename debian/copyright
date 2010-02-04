@@ -1,12 +1,24 @@
-This package was debianized by Lenart Janos <ocsi@debian.org> on
-Fri, 23 Feb 2001 00:29:54 +0100.
-It is currently maintained by Josip Rodin <joy-packages@debian.org>.
+Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
+Name: wmtemp
+Maintainer: Roger Dunce <kronos@fluxcode.net>
+Source: http://www.fluxcode.net
 
-The original source can be found at: http://www.fluxcode.net/
 
-Upstream author: Roger Dunce <kronos@fluxcode.net>
+Files: *
+Copyright: 2001-2007, Roger Dunce <kronos@fluxcode.net>
+License: Artistic
+   On Debian systems the full text of the Artistic License 
+   can be found in the `/usr/share/common-licenses/Artistic'
+   file.
 
-You may distribute this program under the terms of the Artistic License.
 
-On Debian systems, the complete text of the Artistic License
-can be found in /usr/share/common-licenses/Artistic.
+Files: debian/*
+Copyright: 2001-2004, Lenart Janos <ocsi@debian.org>
+           2001-2006, Josip Rodin <joy-packages@debian.org>
+                2006, Steinar H. Gunderson <sesse@debian.org>
+                2010, Dario Minnucci <midget@debian.org>
+License: Artistic
+   On Debian systems the full text of the Artistic License 
+   can be found in the `/usr/share/common-licenses/Artistic'
+   file.
+

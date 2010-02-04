@@ -1,2 +1,2 @@
-?package(wmgtemp):needs="x11" section="Apps/System" title="wmgtemp" \
+?package(wmgtemp):needs="x11" section="Applications/System/Monitoring" title="wmgtemp" \
   longtitle="Temperature sensor" command="/usr/bin/wmgtemp"

@@ -1,13 +1,14 @@
 Source: wmgtemp
 Section: utils
-Priority: optional
-Maintainer: Josip Rodin <joy-packages@debian.org>
-Build-Depends: debhelper (>> 5), libsensors-dev, libx11-dev, libxext-dev, libxpm-dev
-Standards-Version: 3.6.1
+Priority: extra
+Maintainer: Debian QA Group <packages@qa.debian.org>
+Build-Depends: debhelper (>=7), libsensors-dev, libx11-dev, libxext-dev, libxpm-dev
+Standards-Version: 3.8.4
+Homepage: http://www.fluxcode.net
 
 Package: wmgtemp
 Architecture: any
-Depends: ${shlibs:Depends}, lm-sensors
+Depends: ${misc:Depends}, ${shlibs:Depends}, lm-sensors
 Suggests: i2c-source
 Description: Temperature sensor dockapp for Window Maker
  wmgtemp is a dock app (a 64x64 window) which graphically displays the

@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <sys/param.h>
 #include <sys/types.h>
+#include <sys/poll.h>
+#include <time.h>
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <X11/extensions/shape.h>
@@ -144,12 +146,14 @@ int main(int argc, char **argv) {
     feature1 = feature2 = 0;
     
     while((feature = sensors_get_all_features(*name, &feature1, &feature2)) != NULL) {
-      if(strcmp(feature->name, (const char *)sensor_feature1) == 0 && sensors_get_ignored(*name, feature->number)) {
+      if(strcmp(feature->name, (const char *)sensor_feature1) == 0 
+         && sensors_get_ignored(*name, feature->number)) {
 	SENSOR_DEF_CPU = feature->number;
 	BitOn(SENSOR_DISP, CPU);
 	chip_found = 1;
       }
-      if(strcmp(feature->name, (const char *)sensor_feature2) == 0 && sensors_get_ignored(*name, feature->number)) {
+      if(strcmp(feature->name, (const char *)sensor_feature2) == 0 
+         && sensors_get_ignored(*name, feature->number)) {
 	SENSOR_DEF_SYS = feature->number;
 	BitOn(SENSOR_DISP, SYS);
 	chip_found = 1;
@@ -214,8 +218,8 @@ int main(int argc, char **argv) {
   RedrawWindow();
     
   // Set up signal handler
-  signal(SIGALRM, do_sensors);
-  alarm(delay);
+//  signal(SIGALRM, do_sensors);
+//  alarm(delay);
 
   process_xevents();
   
@@ -245,10 +249,49 @@ void draw_scale_indicator() {
 
 void process_xevents() {
   int button_area = 0;
-
+  int* xfds = NULL;
+  int fdcount = 0;
+  struct pollfd* pfds = NULL;
   XEvent Event;
+  Status ret;
+  time_t lastupdate = 0;
+    
+  ret = XInternalConnectionNumbers(display, &xfds, &fdcount);
+  if(!ret) {
+    fdcount = 0;
+    if(xfds) {
+      XFree(xfds);
+    }
+    xfds = NULL;
+  }
+  
+  int i;
+  pfds = (struct pollfd*)malloc((fdcount+1)*sizeof(struct pollfd));
+  if(!pfds) {
+    perror("malloc");
+    exit(EXIT_FAILURE);
+  }
+  
+  for(i=0; i < fdcount; ++i) {
+    pfds[i].fd = xfds[i];
+    pfds[i].events = POLLIN | POLLPRI;
+  }
+  
+  if(xfds) {
+    XFree(xfds);
+  }
+  
+  pfds[fdcount].fd = ConnectionNumber(display);
+  pfds[fdcount].events = POLLIN | POLLPRI;
   
   while(1) {
+    poll(pfds, fdcount + 1, delay * 1000);
+    
+    if(time(NULL) - lastupdate >= delay) {
+      lastupdate = time(NULL);
+      do_sensors(0);
+    }
+    
     while(XPending(display)) {
       XNextEvent(display, &Event);
       switch(Event.type) {
@@ -337,12 +380,11 @@ void process_xevents() {
 	break;
       }
     }
-    usleep(100000);
   }
 }
 
 void do_sensors(int val) {
-  alarm(delay);
+//  alarm(delay);
 
   update_sensor_data();
   update_display();
@@ -412,12 +454,22 @@ void update_display() {
     // Clear a line
     copyXPMArea(65, 0, 1, 39, j + 2, 12);
     
-    // Draw the temperatures on the graph.
-    if(IsOn(SENSOR_DISP, CPU)) {
-      add_to_graph(cpu_history[j], CPU, 1, range_upper - range_lower, j + 2);
+    if(sys_history[j] < cpu_history[j]) {
+      // Draw the temperatures on the graph.
+      if(IsOn(SENSOR_DISP, CPU)) {
+        add_to_graph(cpu_history[j], CPU, 1, range_upper - range_lower, j + 2);
+      }
+      if(IsOn(SENSOR_DISP, SYS)) {
+        add_to_graph(sys_history[j], SYS, 0, range_upper - range_lower, j + 2);
+      }
     }
-    if(IsOn(SENSOR_DISP, SYS)) {
-      add_to_graph(sys_history[j], SYS, 0, range_upper - range_lower, j + 2);
+    else {
+      if(IsOn(SENSOR_DISP, SYS)) {
+        add_to_graph(sys_history[j], SYS, 0, range_upper - range_lower, j + 2);
+      }
+      if(IsOn(SENSOR_DISP, CPU)) {
+        add_to_graph(cpu_history[j], CPU, 1, range_upper - range_lower, j + 2);
+      }
     }
   }
   
@@ -575,7 +627,7 @@ int init_sensors() {
   FILE *config_file;
   int res;
 
-  config_file = fopen("/etc/sensors.conf", "r");
+  config_file = fopen"/etc/sensors.conf", "r");
 
   if(config_file == NULL) {
     fprintf(stderr, "Error opening /etc/sensors.conf\n");

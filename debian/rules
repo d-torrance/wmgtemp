@@ -4,8 +4,6 @@
 
 #export DH_VERBOSE=1
 
-export DH_COMPAT=5
-
 build: src/wmgtemp
 
 src/wmgtemp: src/Makefile
@@ -22,7 +20,7 @@ clean:
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	dh_installdirs usr/bin
 	$(MAKE) install INSTDIR=$(CURDIR)/debian/wmgtemp/usr/bin MANINSTDIR=$(CURDIR)/debian/wmgtemp/usr/share/man/man1
 
