@@ -1,3 +1,15 @@
+wmgtemp (1.1-1) unstable; urgency=low
+
+  * QA upload.
+  * New upstream version, using libsensors4 instead of libsensors3.
+  * Remove obsolete parts of descriptions about i2c-source.
+  * Fix debian/watch to also look for .tar.gz files (Closes: #596101).
+  * Remove 000_fix_on_src_wmtemp.c.diff (fixed upstream).
+  * Add 001_use_sensors3.conf.diff to use /etc/sensors3.conf instead of 
+    /etc/sensors.conf.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 07 Feb 2011 19:22:37 +0100
+
 wmgtemp (0.8-1) unstable; urgency=low
 
   * QA upload.

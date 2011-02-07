@@ -11,7 +11,6 @@
 #include <X11/xpm.h>
 #include <X11/extensions/shape.h>
 #include <sensors/sensors.h>
-#include <sensors/chips.h>
 #include <sensors/error.h>
 #include "wmgeneral/wmgeneral.h"
 #include "wmgeneral/misc.h"
@@ -52,7 +51,7 @@
 
 #define DEBUG 0 /* 0 disable 1 enable  */
 
-#define OPT_STRING "g:s:hH:w:m:M:a:e:u:1:2:t:q"
+#define OPT_STRING "g:sS:hH:w:m:M:a:e:u:1:2:c:tq"
 
 #define TEMPTOFAHRENHEIT(t) ((int)((t * (1.8) + 32)))
 #define TEMPTOKELVIN(t)     ((int)(t + 273))
@@ -85,10 +84,11 @@ inline void cycle_temptype();
 int delay      = 1;
 const sensors_chip_name *name;
 char *exec_app = NULL;
+char *rc_config = NULL;
 
-short SENSOR_DISP    = 0;
-short SENSOR_DEF_CPU = 0;
-short SENSOR_DEF_SYS = 0;
+short SENSOR_DISP   = 0;
+int SUBFEAT_NUM_CPU = 0;
+int SUBFEAT_NUM_SYS = 0;
 
 double cpu_history[59];
 double sys_history[59];
@@ -112,6 +112,7 @@ short  swap_types   = 0;
 
 char *sensor_feature1 = "temp1";
 char *sensor_feature2 = "temp2";
+char *sensor_chip = NULL;
 
 short quiet = 0;
 
@@ -119,18 +120,18 @@ int main(int argc, char **argv) {
   char *chipname = NULL;
   int chip_nr = 0;
   int i = 0;
-  short tmp_swap;
+  int tmp_swap;
 
-  int feature1 = 0;
-  int feature2 = 0;
-  const sensors_feature_data* feature = NULL;
+  const sensors_feature* feature = NULL;
+  const sensors_subfeature* subfeature_cpu = NULL;
+  const sensors_subfeature* subfeature_sys = NULL;
   short chip_found = -1;
 
   BitOn(SENSOR_DISP, WARN_NONE);
   BitOn(SENSOR_DISP, TSCALE_CELCIUS);
   BitOn(SENSOR_DISP, GRAPH_LINE);
 
-  //  *conffname = "/etc/sensors.conf"; 
+  /* *conffname = "/etc/sensors3.conf";  */
 
   if(!process_config(argc, argv)) {
     exit(-1);
@@ -141,22 +142,23 @@ int main(int argc, char **argv) {
   }
   
   /* Get the chip name */
-  name = sensors_get_detected_chips(&chip_nr);
+  name = sensors_get_detected_chips(NULL, &chip_nr);
   while(name != NULL && chip_found == -1) {
-    feature1 = feature2 = 0;
-    
-    while((feature = sensors_get_all_features(*name, &feature1, &feature2)) != NULL) {
-      if(strcmp(feature->name, (const char *)sensor_feature1) == 0 
-         && sensors_get_ignored(*name, feature->number)) {
-	SENSOR_DEF_CPU = feature->number;
-	BitOn(SENSOR_DISP, CPU);
-	chip_found = 1;
-      }
-      if(strcmp(feature->name, (const char *)sensor_feature2) == 0 
-         && sensors_get_ignored(*name, feature->number)) {
-	SENSOR_DEF_SYS = feature->number;
-	BitOn(SENSOR_DISP, SYS);
-	chip_found = 1;
+    if (!sensor_chip || strcmp(name->prefix, (const char *)sensor_chip) == 0) {
+      i = 0;
+      while ((feature = sensors_get_features(name, &i))) {
+        if(strcmp(feature->name, (const char *)sensor_feature1) == 0) {
+          subfeature_cpu = sensors_get_subfeature(name, feature, SENSORS_SUBFEATURE_TEMP_INPUT);
+          SUBFEAT_NUM_CPU = subfeature_cpu->number;
+          BitOn(SENSOR_DISP, CPU);
+          chip_found = 1;
+        }
+        if(strcmp(feature->name, (const char *)sensor_feature2) == 0) {
+          subfeature_sys = sensors_get_subfeature(name, feature, SENSORS_SUBFEATURE_TEMP_INPUT);
+          SUBFEAT_NUM_SYS = subfeature_sys->number;
+          BitOn(SENSOR_DISP, SYS);
+          chip_found = 1;
+        }
       }
     }
 
@@ -164,7 +166,7 @@ int main(int argc, char **argv) {
       chipname = name->prefix;
     }
     else {
-      name = sensors_get_detected_chips(&chip_nr);
+      name = sensors_get_detected_chips(NULL, &chip_nr);
     }
   }
   if(chip_found == -1) {
@@ -174,14 +176,25 @@ int main(int argc, char **argv) {
 
   /* output the name of the sensor if found. */
   if(quiet == 0)
-    printf("wmgtemp: Primary Sensor - %s on %s\n", name->prefix, sensors_get_adapter_name(name->bus));
+    printf("wmgtemp: Primary Sensor - %s on %s\n", name->prefix, sensors_get_adapter_name(&name->bus));
   
   if(swap_types) {
     if(quiet == 0)
       printf("wmgtemp: swapping temps\n");
-    tmp_swap = SENSOR_DEF_SYS;
-    SENSOR_DEF_SYS = SENSOR_DEF_CPU;
-    SENSOR_DEF_CPU = tmp_swap;
+    tmp_swap = SUBFEAT_NUM_SYS;
+    SUBFEAT_NUM_SYS = SUBFEAT_NUM_CPU;
+    SUBFEAT_NUM_CPU = tmp_swap;
+    tmp_swap = SENSOR_DISP;
+    if(IsOn(tmp_swap, CPU)) {
+      BitOn(SENSOR_DISP, SYS);
+    } else {
+      BitOff(SENSOR_DISP, SYS);
+    }
+    if(IsOn(tmp_swap, SYS)) {
+      BitOn(SENSOR_DISP, CPU);
+    } else {
+      BitOff(SENSOR_DISP, CPU);
+    }
   }
 
   chip_nr = 0;
@@ -217,10 +230,6 @@ int main(int argc, char **argv) {
   do_sensors(0);
   RedrawWindow();
     
-  // Set up signal handler
-//  signal(SIGALRM, do_sensors);
-//  alarm(delay);
-
   process_xevents();
   
   return 0;
@@ -228,22 +237,34 @@ int main(int argc, char **argv) {
 
 void draw_scale_indicator() {
   if(IsOn(SENSOR_DISP, TSCALE_CELCIUS)) {
-    if(IsOn(SENSOR_DISP, CPU))
+    if(IsOn(SENSOR_DISP, CPU)) {
       copyXPMArea(61, 65, 5, 7, 55, CPU_YPOS);
-    if(IsOn(SENSOR_DISP, SYS))
+      copyXPMArea(70,  2, 2, 2, 52, CPU_YPOS);
+    }
+    if(IsOn(SENSOR_DISP, SYS)) {
       copyXPMArea(61, 65, 5, 7, 55, SYS_YPOS);
+      copyXPMArea(70,  2, 2, 2, 52, SYS_YPOS);
+    }
   }
   else if(IsOn(SENSOR_DISP, TSCALE_FAHRENHEIT)) {
-    if(IsOn(SENSOR_DISP, CPU))
+    if(IsOn(SENSOR_DISP, CPU)) {
       copyXPMArea(67, 65, 5, 7, 55, CPU_YPOS);
-    if(IsOn(SENSOR_DISP, SYS))
+      copyXPMArea(70,  2, 2, 2, 52, CPU_YPOS);
+    }
+    if(IsOn(SENSOR_DISP, SYS)) {
       copyXPMArea(67, 65, 5, 7, 55, SYS_YPOS);
+      copyXPMArea(70,  2, 2, 2, 52, SYS_YPOS);
+    }
   }
   else if(IsOn(SENSOR_DISP, TSCALE_KELVIN)) {
-    if(IsOn(SENSOR_DISP, CPU))
+    if(IsOn(SENSOR_DISP, CPU)) {
       copyXPMArea(73, 65, 5, 7, 55, CPU_YPOS);
-    if(IsOn(SENSOR_DISP, SYS))
+      copyXPMArea(70,  0, 2, 2, 52, CPU_YPOS);
+    }
+    if(IsOn(SENSOR_DISP, SYS)) {
       copyXPMArea(73, 65, 5, 7, 55, SYS_YPOS);
+      copyXPMArea(70,  0, 2, 2, 52, SYS_YPOS);
+    }
   }
 }
 
@@ -342,7 +363,7 @@ void process_xevents() {
 	  RedrawWindow();
 	  break;
 	case 3:
-	  if(SENSOR_DEF_CPU) {
+	  if(SUBFEAT_NUM_CPU) {
 	    if(IsOn(SENSOR_DISP, CPU)) {
 	      BitOff(SENSOR_DISP, CPU); 
 	      blank_type(CPU);
@@ -350,13 +371,14 @@ void process_xevents() {
 	    else {
 	      BitOn(SENSOR_DISP, CPU);
 	      draw_type(CPU);
+	      draw_scale_indicator();
 	    }
 	  }
 	  update_display();
 	  RedrawWindow();
 	  break;
 	case 4:
-	  if(SENSOR_DEF_SYS) {
+	  if(SUBFEAT_NUM_SYS) {
 	    if(IsOn(SENSOR_DISP, SYS)) {
 	      BitOff(SENSOR_DISP, SYS);
 	      blank_type(SYS);
@@ -364,6 +386,7 @@ void process_xevents() {
 	    else {
 	      BitOn(SENSOR_DISP, SYS);
 	      draw_type(SYS);
+	      draw_scale_indicator();
 	    }
 	  }
 	  update_display();
@@ -384,7 +407,6 @@ void process_xevents() {
 }
 
 void do_sensors(int val) {
-//  alarm(delay);
 
   update_sensor_data();
   update_display();
@@ -412,8 +434,8 @@ void update_sensor_data() {
   }
   
   // Read the new values from the sensors into the temperature arrays.
-  sensors_get_feature(*name, SENSOR_DEF_SYS, &sys_history[58]);
-  sensors_get_feature(*name, SENSOR_DEF_CPU, &cpu_history[58]);
+  if(IsOn(SENSOR_DISP, SYS)) sensors_get_value(name, SUBFEAT_NUM_SYS, &sys_history[58]);
+  if(IsOn(SENSOR_DISP, CPU)) sensors_get_value(name, SUBFEAT_NUM_CPU, &cpu_history[58]);
 
   // Update the run high/low values.
   if(cpu_high > run_cpu_high)
@@ -435,13 +457,13 @@ void update_display() {
   draw_warning_lights(cpu_history[58]);
   
   // ReDraw temperature numbers
-  if(SENSOR_DEF_CPU) {
+  if(IsOn(SENSOR_DISP, CPU)) {
     copyXPMArea(78, 65, 5, 7, 34, CPU_YPOS);
     copyXPMArea(78, 65, 5, 7, 40, CPU_YPOS);
     copyXPMArea(78, 65, 5, 7, 46, CPU_YPOS);
     draw_temp(TEMPTODISPLAYSCALE(IsOn(SENSOR_DISP, HIGH_CPU) == 0 ? cpu_history[58] : run_cpu_high, SENSOR_DISP), CPU);
   }
-  if(SENSOR_DEF_SYS) {
+  if(IsOn(SENSOR_DISP, SYS)) {
     copyXPMArea(78, 65, 5, 7, 34, SYS_YPOS);
     copyXPMArea(78, 65, 5, 7, 40, SYS_YPOS);
     copyXPMArea(78, 65, 5, 7, 46, SYS_YPOS);
@@ -575,11 +597,25 @@ void add_to_graph(double temp, int type, short blank, double range, int pos) {
   short length = each * (temp - range_lower);
 
   // Draw the graphs
-  if(IsOn(SENSOR_DISP, GRAPH_BLOCK)) {
-    copyXPMArea(type == CPU ? 67 : 68, 0, 1, length, pos, 51 - length);
-  }
-  else if(IsOn(SENSOR_DISP, GRAPH_LINE)) {
-    copyXPMArea(type == CPU ? 67 : 68, 0, 1, 1, pos, 51 - length);
+  //  if(IsOn(SENSOR_DISP, GRAPH_BLOCK)) {
+  //    copyXPMArea(type == CPU ? 67 : 68, 0, 1, length, pos, 51 - length);
+  //  }
+  //  else if(IsOn(SENSOR_DISP, GRAPH_LINE)) {
+  //    copyXPMArea(type == CPU ? 67 : 68, 0, 1, 1, pos, 51 - length);
+  //  }
+
+  // Do not draw the graphs if the temperature data does not make sense
+  // Orginially used the code above but change supplied to fix issues seen by Ben Spencer.
+  // Couldn't be arsed to find the real cause as I don't use the app myself anymore.
+  // Doesn't seem to break anything though
+  if ((temp >= range_lower) && (temp <= range_upper)) {
+    // Draw the graphs
+    if(IsOn(SENSOR_DISP, GRAPH_BLOCK)) {
+      copyXPMArea(type == CPU ? 67 : 68, 0, 1, length, pos, 51 - length);
+    }
+    else if(IsOn(SENSOR_DISP, GRAPH_LINE)) {
+      copyXPMArea(type == CPU ? 67 : 68, 0, 1, 1, pos, 51 - length);
+    }
   }
 }
 
@@ -627,10 +663,10 @@ int init_sensors() {
   FILE *config_file;
   int res;
 
-  config_file = fopen"/etc/sensors.conf", "r");
+  config_file = fopen(rc_config, "r");
 
   if(config_file == NULL) {
-    fprintf(stderr, "Error opening /etc/sensors.conf\n");
+    fprintf(stderr, "Error opening %s\n", rc_config);
     return 0;
   }
 
@@ -642,40 +678,44 @@ int init_sensors() {
   }
 
   if(fclose(config_file))
-    perror("Error closing sensors.conf");
+    perror("Error closing sensors config");
 
   return 1;
 }
 
 void display_usage() {
-  printf("wmgtemp v0.7\n" \
+  printf("wmgtemp v0.9\n" \
 	 "Usage: wmgtemp [options]\n" \
 	 "Options:\n" \
-	 "   -s, --scale=SCALE  display temperatures in SCALE\n" \
-	 "                      SCALE=kelvin, fahrenheit\n" \
-	 "                      [Default: celcius]\n" \
-	 "   -g, --graph=STYLE  display graph as STYLE\n" \
-	 "                      STYLE=line, block\n" \
-	 "                      [Default: line]\n" \
-	 "   -H, --high=TEMP    Display red warning light at TEMP degrees celcius\n" \
-	 "                      [Default: 50]\n" \
-	 "   -w, --warn=TEMP    Display amber warning light at TEMP degrees celcius\n" \
-	 "                      [Default: 45]\n" \
-	 "   -u, --update=SEC   update the display every SEC seconds\n" \
-	 "                      [Default: 1]\n" \
-	 "   -m, --min=TEMP     set the lower bound of the graph to TEMP degrees celcius\n" \
-	 "                      [Default: 20]\n" \
-	 "   -M, --max=TEMP     set the upper bound of the graph to TEMP degrees celcius\n" \
-	 "                      [Default: 35]\n" \
-	 "   -1, --feature1=F1  set the feature for CPU\n" \
-	 "                      [Default: temp1]\n" \
-	 "   -2, --feature2=F2  set the feature for SYS\n" \
-	 "                      [Default: temp2]\n" \
-	 "   -a, --execat=TEMP  Execute a command at TEMP degrees celcius\n" \
-	 "   -e, --exec=COMMAND Execute COMMAND when the 'execat' temperature is reached\n" \
-	 "   -t, --swap         Swap CPU and SYS temps\n" \
-	 "   -q, --quiet        Don't display any messages\n" \
-	 "   -h, --help         Displays this help screen\n");
+	 "   -S, --sensorconf=PATH  Specify sensors config file PATH\n" \
+	 "                          [Default: /etc/sensors.conf]\n" \
+	 "   -s, --scale=SCALE      Display temperatures in SCALE\n" \
+	 "                          SCALE=kelvin, fahrenheit\n" \
+	 "                          [Default: celcius]\n" \
+	 "   -g, --graph=STYLE      Display graph as STYLE\n" \
+	 "                          STYLE=line, block\n" \
+	 "                          [Default: line]\n" \
+	 "   -H, --high=TEMP        Display red warning light at TEMP degrees celcius\n" \
+	 "                          [Default: 50]\n" \
+	 "   -w, --warn=TEMP        Display amber warning light at TEMP degrees celcius\n" \
+	 "                          [Default: 45]\n" \
+	 "   -u, --update=SEC       Update the display every SEC seconds\n" \
+	 "                          [Default: 1]\n" \
+	 "   -m, --min=TEMP         Set lower bound of the graph to TEMP degrees celcius\n" \
+	 "                          [Default: 20]\n" \
+	 "   -M, --max=TEMP         Set upper bound of the graph to TEMP degrees celcius\n" \
+	 "                          [Default: 35]\n" \
+	 "   -1, --feature1=F1      Set the feature for CPU\n" \
+	 "                          [Default: temp1]\n" \
+	 "   -2, --feature2=F2      Set the feature for SYS\n" \
+	 "                          [Default: temp2]\n" \
+	 "   -c, --chip=NAME        Use sensor chip matching NAME\n" \
+	 "                          [Default: use any]\n" \
+	 "   -a, --execat=TEMP      Execute a command at TEMP degrees celcius\n" \
+	 "   -e, --exec=COMMAND     Execute COMMAND when 'execat' temperature is reached\n" \
+	 "   -t, --swap             Swap CPU and SYS temps\n" \
+	 "   -q, --quiet            Don't display any messages\n" \
+	 "   -h, --help             Displays this help screen\n");
 }
 
 void draw_warning_lights(double current_temp) {
@@ -711,11 +751,27 @@ inline void blank_type(int type) {
     copyXPMArea(78, 65, 5, 7, 11, CPU_YPOS);
     copyXPMArea(78, 65, 5, 7, 17, CPU_YPOS);
     copyXPMArea(78, 65, 5, 7, 23, CPU_YPOS);
+
+    copyXPMArea(70, 0, 2, 2, 52, CPU_YPOS);
+
+    copyXPMArea(78, 65, 5, 7, 34, CPU_YPOS);
+    copyXPMArea(78, 65, 5, 7, 40, CPU_YPOS);
+    copyXPMArea(78, 65, 5, 7, 46, CPU_YPOS);
+
+    copyXPMArea(78, 65, 5, 7, 55, CPU_YPOS);
     break;
   case SYS:
     copyXPMArea(78, 65, 5, 7, 11, SYS_YPOS);
     copyXPMArea(78, 65, 5, 7, 17, SYS_YPOS);
     copyXPMArea(78, 65, 5, 7, 23, SYS_YPOS);
+
+    copyXPMArea(70, 0, 2, 2, 52, SYS_YPOS);
+
+    copyXPMArea(78, 65, 5, 7, 34, SYS_YPOS);
+    copyXPMArea(78, 65, 5, 7, 40, SYS_YPOS);
+    copyXPMArea(78, 65, 5, 7, 46, SYS_YPOS);
+
+    copyXPMArea(78, 65, 5, 7, 55, SYS_YPOS);
     break;
   }
 }
@@ -770,7 +826,8 @@ int process_config(int argc, char **argv) {
   char *rc_swap   = NULL;
   char *rc_feature1 = NULL;
   char *rc_feature2 = NULL;
-  char *rc_quiet = NULL;
+  char *rc_quiet  = NULL;
+  char *rc_chip   = NULL;
   short parse_ok  = 1;
   int opt_index;
   int opt;
@@ -791,6 +848,8 @@ int process_config(int argc, char **argv) {
     { "quiet", &rc_quiet },
     { "feature1", &rc_feature1 },
     { "feature2", &rc_feature2 },
+    { "chip", &rc_chip },
+    { "sensorconf", &rc_config },
     { NULL, NULL }
   };
   
@@ -806,6 +865,8 @@ int process_config(int argc, char **argv) {
     {"update", required_argument, 0, 'u'},
     {"feature1", required_argument, 0, '1'},
     {"feature2", required_argument, 0, '2'},
+    {"chip",   required_argument, 0, 'c'},
+    {"sensorconf", required_argument, 0, 'S'},
     {"swap",   no_argument,       0, 't'},
     {"quiet",   no_argument,       0, 'q'},
     {"help",   no_argument,       0, 'h'},
@@ -853,6 +914,12 @@ int process_config(int argc, char **argv) {
     case '2':
       rc_feature2 = strdup(optarg);
       break;
+    case 'c':
+      rc_chip = strdup(optarg);
+      break;
+    case 'S':
+      rc_config = strdup(optarg);
+      break;
     case 'q':
       rc_quiet = "y";
       break;
@@ -879,6 +946,12 @@ int process_config(int argc, char **argv) {
   }
   if(rc_feature2 != NULL) {
     sensor_feature2 = strdup(rc_feature2);
+  }
+  if(rc_chip != NULL) {
+    sensor_chip = strdup(rc_chip);
+  }
+  if(rc_config == NULL) {
+    rc_config = "/etc/sensors.conf";
   }
 
   if(rc_graph != NULL) {
