@@ -6,7 +6,11 @@ wmgtemp \- Temperature sensor dock app for Window Maker
 .B wmgtemp
 .I "[options]"
 .SH "DESCRIPTION"
-wmgtemp is a dock-app for Window Maker that graphically displays the CPU and System temperatures using the lm_sensors package. It displays the CPU and System temperature values, a scaling graph of temperature history, high-temperature warning lights and temperatures in celcius, fahrenheit or kelvin.
+wmgtemp is a dock-app for Window Maker that graphically displays the CPU and
+System temperatures using the lm_sensors package. It displays the CPU and
+System temperature values, a scaling graph of temperature history,
+high-temperature warning lights and temperatures in degrees Celsius,
+Fahrenheit or Kelvin.
 .PP
 The temperature graph is auto scaling, meaning that if the max or min temperature boundary is crossed the graph will be scaled to display the temperature. A red line marks the upper boundary whereas a blue line indicates the lower boundary. When all the temperatures being displayed are within the boundaries the graph will be scaled back to the preset values for min/max and the boundary indicator lines will be removed.
 .PP
@@ -129,6 +133,8 @@ You may change the scale the temperatures are displayed in by clicking on either
 Blank lines in the config file cause a Segmentation Fault.
 .PP
 .SH SEE ALSO
+.BR sensors.conf (5),
+.BR libsensors (3),
 .BR wmaker (1x)
 .SH AUTHOR
 wmgtemp was written by Roger Dunce <kronos@fluxcode.net>

@@ -1,6 +1,7 @@
 CC      = gcc
 INSTALL = /usr/bin/install
-LDFLAGS = -L/usr/X11R6/lib -lXpm -lXext -lX11 -lsensors
+LIB     = lib
+LDFLAGS = -L/usr/X11R6/$(LIB) -lXpm -lXext -lX11 -lsensors
 BINARY  = wmgtemp
 CCFLAGS = -Wall -g
 INSTDIR = /usr/local/bin
