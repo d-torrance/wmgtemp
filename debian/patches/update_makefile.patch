@@ -1,0 +1,32 @@
+Description: Update manpage.
+ In particular,
+ - Create binary installation directory.
+ - Honor DESTDIR variable.
+Author: Doug Torrance <dtorrance@monmouthcollege.edu>
+Last-Update: 2015-01-31
+
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -21,7 +21,8 @@
+ 	@ $(RM) $(OFILES) *~ "#"* $(BINARY)
+ 
+ install::
+-	$(INSTALL) -m 755 -c $(BINARY) $(INSTDIR)/$(BINARY)
++	$(INSTALL) -d $(DESTDIR)$(INSTDIR)
++	$(INSTALL) -m 755 -c $(BINARY) $(DESTDIR)$(INSTDIR)/$(BINARY)
+ 
+ depend:
+ 	@ $(CC) -MM *.c > .deps
+--- a/Makefile
++++ b/Makefile
+@@ -10,8 +10,8 @@
+ 
+ install:    
+ 	( cd src && $(MAKE) install INSTDIR=$(INSTDIR) )
+-	$(INSTALL) -d $(MANINSTDIR)
+-	$(INSTALL) -m 755 -c $(MANPAGE) $(MANINSTDIR)/$(MANPAGE)
++	$(INSTALL) -d $(DESTDIR)$(MANINSTDIR)
++	$(INSTALL) -m 755 -c $(MANPAGE) $(DESTDIR)$(MANINSTDIR)/$(MANPAGE)
+ 
+ clean:
+ 	( cd src && $(MAKE) clean)

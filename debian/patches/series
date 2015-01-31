@@ -1,2 +1,3 @@
 000_fix_hypens_in_wmtemp.1.diff
 001_sensors.conf.diff
+update_makefile.patch
