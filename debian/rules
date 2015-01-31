@@ -1,51 +1,7 @@
 #!/usr/bin/make -f
-# debian/rules for wmgtemp, by Josip Rodin
-# based on files by Joey Hess and Janos Lenart.
 
-#export DH_VERBOSE=1
-
-build: src/wmgtemp
-
-src/wmgtemp: src/Makefile
-	dh_testdir
-	$(MAKE) depend
-	$(MAKE)
-
-clean:
-	dh_testdir
-	dh_testroot
-	$(MAKE) clean
-	dh_clean
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_prep
-	dh_installdirs usr/bin
-	$(MAKE) install INSTDIR=$(CURDIR)/debian/wmgtemp/usr/bin MANINSTDIR=$(CURDIR)/debian/wmgtemp/usr/share/man/man1
-
-binary-indep:
-
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installdocs TODO
-	dh_installchangelogs
-	chmod -x examples/wmgtemprc
-	dh_installexamples examples/wmgtemprc
-	dh_installmenu
-	dh_strip
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-
-.PHONY: build clean binary-indep binary-arch binary install
+%:
+	dh $@
 
 get-orig-source:
 	uscan --verbose --force-download --rename
