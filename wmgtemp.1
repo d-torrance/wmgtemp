@@ -6,7 +6,7 @@ wmgtemp \- Temperature sensor dock app for Window Maker
 .B wmgtemp
 .I "[options]"
 .SH "DESCRIPTION"
-wmgtemp is a dock-app for Window Maker that graphically displays the CPU and System temperatures using the lm_sensors package. It was originally intended to work with the VIA686A chipset but also supports some other sensors. It displays the CPU and System temperature values, a scaling graph of temperature history,high-temperature warning lights and temperatures in celcius, fahrenheit or kelvin.
+wmgtemp is a dock-app for Window Maker that graphically displays the CPU and System temperatures using the lm_sensors package. It displays the CPU and System temperature values, a scaling graph of temperature history, high-temperature warning lights and temperatures in celcius, fahrenheit or kelvin.
 .PP
 The temperature graph is auto scaling, meaning that if the max or min temperature boundary is crossed the graph will be scaled to display the temperature. A red line marks the upper boundary whereas a blue line indicates the lower boundary. When all the temperatures being displayed are within the boundaries the graph will be scaled back to the preset values for min/max and the boundary indicator lines will be removed.
 .PP
@@ -57,6 +57,18 @@ set the upper bound of the graph to TEMP degrees celcius.
 \fBDefault\fP: 35
 
 .TP
+.B \-1, \-\-feature1=F1
+set the feature for CPU
+.br
+\fBDefault\fP: temp1
+
+.TP
+.B \-2, \-\-feature2=F2
+set the feature for SYS
+.br
+\fBDefault\fP: temp2
+
+.TP
 .B \-a, \-\-execat=TEMP
 execute a command at TEMP degrees celcius.
 .br
@@ -72,6 +84,10 @@ execute COMMAND when the 'execat' temperature is reached.
 .B \-t, \-\-swap
 swap/transpose temperature values
 
+.TP
+.B \-q, \-\-quiet
+Don't display any messages
+
 .PP
 .SH FILES
 ~/.wmgtemprc	User configuration.
@@ -84,12 +100,15 @@ scale:celcius
 graph:line
 high:50
 warn:45
-update:sec
+update:1
 min:25
 max:35
 execat:80
 exec:shutdown -h 10
 swap:n
+quiet:y
+feature1:temp1
+feature2:temp2
 .PP
 .SH USAGE
 .SS Graph
@@ -112,6 +131,6 @@ Blank lines in the config file cause a Segmentation Fault.
 .SH SEE ALSO
 .BR wmaker (1x)
 .SH AUTHOR
-wmgtemp was written by Roger Dunce <kronos@nanunanu.org>
+wmgtemp was written by Roger Dunce <kronos@fluxcode.net>
 
 

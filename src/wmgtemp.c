@@ -50,7 +50,7 @@
 
 #define DEBUG 0 /* 0 disable 1 enable  */
 
-#define OPT_STRING "g:s:hH:w:m:M:a:e:u:t"
+#define OPT_STRING "g:s:hH:w:m:M:a:e:u:1:2:t:q"
 
 #define TEMPTOFAHRENHEIT(t) ((int)((t * (1.8) + 32)))
 #define TEMPTOKELVIN(t)     ((int)(t + 273))
@@ -108,6 +108,11 @@ double execat       = 0;
 short  execed       = 0;
 short  swap_types   = 0;
 
+char *sensor_feature1 = "temp1";
+char *sensor_feature2 = "temp2";
+
+short quiet = 0;
+
 int main(int argc, char **argv) {
   char *chipname = NULL;
   int chip_nr = 0;
@@ -139,12 +144,12 @@ int main(int argc, char **argv) {
     feature1 = feature2 = 0;
     
     while((feature = sensors_get_all_features(*name, &feature1, &feature2)) != NULL) {
-      if(strcmp(feature->name, "temp1") == 0 && sensors_get_ignored(*name, feature->number)) {
+      if(strcmp(feature->name, (const char *)sensor_feature1) == 0 && sensors_get_ignored(*name, feature->number)) {
 	SENSOR_DEF_CPU = feature->number;
 	BitOn(SENSOR_DISP, CPU);
 	chip_found = 1;
       }
-      if(strcmp(feature->name, "temp2") == 0 && sensors_get_ignored(*name, feature->number)) {
+      if(strcmp(feature->name, (const char *)sensor_feature2) == 0 && sensors_get_ignored(*name, feature->number)) {
 	SENSOR_DEF_SYS = feature->number;
 	BitOn(SENSOR_DISP, SYS);
 	chip_found = 1;
@@ -164,9 +169,12 @@ int main(int argc, char **argv) {
   }
 
   /* output the name of the sensor if found. */
-  printf("wmgtemp: Primary Sensor - %s on %s\n", name->prefix, sensors_get_adapter_name(name->bus));
+  if(quiet == 0)
+    printf("wmgtemp: Primary Sensor - %s on %s\n", name->prefix, sensors_get_adapter_name(name->bus));
+  
   if(swap_types) {
-    printf("wmgtemp: swapping temps\n");
+    if(quiet == 0)
+      printf("wmgtemp: swapping temps\n");
     tmp_swap = SENSOR_DEF_SYS;
     SENSOR_DEF_SYS = SENSOR_DEF_CPU;
     SENSOR_DEF_CPU = tmp_swap;
@@ -588,30 +596,34 @@ int init_sensors() {
 }
 
 void display_usage() {
-  printf("Usage: wmgtemp [options]
-Options:
-   -s, --scale=SCALE  display temperatures in SCALE
-                      SCALE=kelvin, fahrenheit
-                      [Default: celcius]
-   -g, --graph=STYLE  display graph as STYLE
-                      STYLE=line, block
-                      [Default: line]
-   -H, --high=TEMP    Display red warning light at TEMP degrees celcius
-                      [Default: 50]
-   -w, --warn=TEMP    Display amber warning light at TEMP degrees celcius
-                      [Default: 45]
-   -u, --update=SEC   update the display every SEC seconds
-                      [Default: 1]
-   -m, --min=TEMP     set the lower bound of the graph to TEMP degrees celcius
-                      [Default: 20]
-   -M, --max=TEMP     set the upper bound of the graph to TEMP degrees celcius
-                      [Default: 35]
-   -a, --execat=TEMP  Execute a command at TEMP degrees celcius
-   -e, --exec=COMMAND Execute COMMAND when the 'execat' temperature is reached
-   -t, --swap         Swap CPU and SYS temps
-   -h, --help         Displays this help screen
-");
-  
+  printf("wmgtemp v0.7\n" \
+	 "Usage: wmgtemp [options]\n" \
+	 "Options:\n" \
+	 "   -s, --scale=SCALE  display temperatures in SCALE\n" \
+	 "                      SCALE=kelvin, fahrenheit\n" \
+	 "                      [Default: celcius]\n" \
+	 "   -g, --graph=STYLE  display graph as STYLE\n" \
+	 "                      STYLE=line, block\n" \
+	 "                      [Default: line]\n" \
+	 "   -H, --high=TEMP    Display red warning light at TEMP degrees celcius\n" \
+	 "                      [Default: 50]\n" \
+	 "   -w, --warn=TEMP    Display amber warning light at TEMP degrees celcius\n" \
+	 "                      [Default: 45]\n" \
+	 "   -u, --update=SEC   update the display every SEC seconds\n" \
+	 "                      [Default: 1]\n" \
+	 "   -m, --min=TEMP     set the lower bound of the graph to TEMP degrees celcius\n" \
+	 "                      [Default: 20]\n" \
+	 "   -M, --max=TEMP     set the upper bound of the graph to TEMP degrees celcius\n" \
+	 "                      [Default: 35]\n" \
+	 "   -1, --feature1=F1  set the feature for CPU\n" \
+	 "                      [Default: temp1]\n" \
+	 "   -2, --feature2=F2  set the feature for SYS\n" \
+	 "                      [Default: temp2]\n" \
+	 "   -a, --execat=TEMP  Execute a command at TEMP degrees celcius\n" \
+	 "   -e, --exec=COMMAND Execute COMMAND when the 'execat' temperature is reached\n" \
+	 "   -t, --swap         Swap CPU and SYS temps\n" \
+	 "   -q, --quiet        Don't display any messages\n" \
+	 "   -h, --help         Displays this help screen\n");
 }
 
 void draw_warning_lights(double current_temp) {
@@ -704,6 +716,9 @@ int process_config(int argc, char **argv) {
   char *rc_exec   = NULL;
   char *rc_delay  = NULL;
   char *rc_swap   = NULL;
+  char *rc_feature1 = NULL;
+  char *rc_feature2 = NULL;
+  char *rc_quiet = NULL;
   short parse_ok  = 1;
   int opt_index;
   int opt;
@@ -721,6 +736,9 @@ int process_config(int argc, char **argv) {
     { "exec", &rc_exec },
     { "update", &rc_delay },
     { "swap", &rc_swap },
+    { "quiet", &rc_quiet },
+    { "feature1", &rc_feature1 },
+    { "feature2", &rc_feature2 },
     { NULL, NULL }
   };
   
@@ -734,7 +752,10 @@ int process_config(int argc, char **argv) {
     {"execat", required_argument, 0, 'a'},
     {"exec",   required_argument, 0, 'e'},
     {"update", required_argument, 0, 'u'},
+    {"feature1", required_argument, 0, '1'},
+    {"feature2", required_argument, 0, '2'},
     {"swap",   no_argument,       0, 't'},
+    {"quiet",   no_argument,       0, 'q'},
     {"help",   no_argument,       0, 'h'},
     {0, 0, 0, 0}
   };
@@ -774,6 +795,15 @@ int process_config(int argc, char **argv) {
     case 'u':
       rc_delay = strdup(optarg);
       break;
+    case '1':
+      rc_feature1 = strdup(optarg);
+      break;
+    case '2':
+      rc_feature2 = strdup(optarg);
+      break;
+    case 'q':
+      rc_quiet = "y";
+      break;
     case 't':
       rc_swap = "y";
       break;
@@ -784,6 +814,19 @@ int process_config(int argc, char **argv) {
       display_usage();
       exit(-1);
     }
+  }
+
+  if(rc_quiet != NULL) {
+    if(!strncmp(rc_quiet, "y", 1)) {
+      quiet = 1;
+    }
+  }
+
+  if(rc_feature1 != NULL) {
+    sensor_feature1 = strdup(rc_feature1);
+  }
+  if(rc_feature2 != NULL) {
+    sensor_feature2 = strdup(rc_feature2);
   }
 
   if(rc_graph != NULL) {
@@ -826,7 +869,8 @@ int process_config(int argc, char **argv) {
       parse_ok = 0;
     }
     else {
-      printf("wmgtemp: high temp set to %d degrees celcius.\n", (int)high_temp);
+      if(quiet == 0)
+	printf("wmgtemp: high temp set to %d degrees celcius.\n", (int)high_temp);
     }
   }
   if(rc_warn != NULL) {
@@ -836,7 +880,8 @@ int process_config(int argc, char **argv) {
       parse_ok = 0;
     }
     else {
-      printf("wmgtemp: warning temp set to %d degrees celcius.\n", (int)warn_temp);
+      if(quiet == 0)
+	printf("wmgtemp: warning temp set to %d degrees celcius.\n", (int)warn_temp);
     }
   }
   if(rc_max != NULL) {
@@ -846,7 +891,8 @@ int process_config(int argc, char **argv) {
       parse_ok = 0;
     }
     else {
-      printf("wmgtemp: Upper range set to %d degrees celcius.\n", (int)range_upper);
+      if(quiet == 0)
+	printf("wmgtemp: Upper range set to %d degrees celcius.\n", (int)range_upper);
     }
   }
   if(rc_min != NULL) {
@@ -856,7 +902,8 @@ int process_config(int argc, char **argv) {
       parse_ok = 0;
     }
     else {
-      printf("wmgtemp: Lower range set to %d degrees celcius.\n", (int)range_lower);
+      if(quiet == 0)
+	printf("wmgtemp: Lower range set to %d degrees celcius.\n", (int)range_lower);
     }
   }
   if(rc_delay != NULL) {
@@ -866,7 +913,8 @@ int process_config(int argc, char **argv) {
       parse_ok = 0;
     }
     else {
-      printf("wmgtemp: update delay set to %d seconds.\n", delay);
+      if(quiet == 0)
+	printf("wmgtemp: update delay set to %d seconds.\n", delay);
     }
   }
   if(rc_execat != NULL) {

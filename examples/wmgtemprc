@@ -16,3 +16,7 @@ execat: 80
 exec: xmessage "Ouch, I'm HOT!"
 # Update delay in seconds
 update: 2
+# Use temp3 for second sensor
+feature2:temp3
+# Be quiet
+quiet:y
