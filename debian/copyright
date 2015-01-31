@@ -7,10 +7,9 @@ Source: http://www.fluxcode.net
 Files: *
 Copyright: 2001-2007, Roger Dunce <kronos@fluxcode.net>
 License: Artistic
-   On Debian systems the full text of the Artistic License 
+   On Debian systems the full text of the Artistic License
    can be found in the `/usr/share/common-licenses/Artistic'
    file.
-
 
 Files: debian/*
 Copyright: 2001-2004, Lenart Janos <ocsi@debian.org>
@@ -18,7 +17,6 @@ Copyright: 2001-2004, Lenart Janos <ocsi@debian.org>
                 2006, Steinar H. Gunderson <sesse@debian.org>
                 2010, Dario Minnucci <midget@debian.org>
 License: Artistic
-   On Debian systems the full text of the Artistic License 
+   On Debian systems the full text of the Artistic License
    can be found in the `/usr/share/common-licenses/Artistic'
    file.
-
