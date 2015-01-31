@@ -1,13 +1,39 @@
 Description: Update manpage.
  In particular,
+ - Split LDFLAGS into LDFLAGS and LIBS.
  - Create binary installation directory.
- - Honor DESTDIR variable.
+ - Honor CPPFLAGS and DESTDIR variables.
+ - Rename CCFLAGS to standard CFLAGS.
 Author: Doug Torrance <dtorrance@monmouthcollege.edu>
 Last-Update: 2015-01-31
 
 --- a/src/Makefile
 +++ b/src/Makefile
-@@ -21,7 +21,8 @@
+@@ -1,9 +1,10 @@
+ CC      = gcc
+ INSTALL = /usr/bin/install
+ LIB     = lib
+-LDFLAGS = -L/usr/X11R6/$(LIB) -lXpm -lXext -lX11 -lsensors
++LDFLAGS = -L/usr/X11R6/$(LIB)
++LIBS    = -lXpm -lXext -lX11 -lsensors
+ BINARY  = wmgtemp
+-CCFLAGS = -Wall -g
++CFLAGS = -Wall -g
+ INSTDIR = /usr/local/bin
+ 
+ OFILES  = wmgtemp.o \
+@@ -12,16 +13,17 @@
+ 	./wmgeneral/list.o
+ 
+ %.o:
+-	$(CC) $(CCFLAGS) -c $*.c -o $*.o
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $*.o
+ 
+ $(BINARY): $(OFILES)
+-	$(CC) $(OFILES) $(LDFLAGS) -o $(BINARY)
++	$(CC) $(OFILES) $(LDFLAGS) -o $(BINARY) $(LIBS)
+ 
+ clean:
  	@ $(RM) $(OFILES) *~ "#"* $(BINARY)
  
  install::
