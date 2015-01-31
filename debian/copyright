@@ -1,8 +1,7 @@
-Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
-Name: wmtemp
-Maintainer: Roger Dunce <kronos@fluxcode.net>
-Source: http://www.fluxcode.net
-
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: wmtemp
+Upstream-Contact: Roger Dunce <kronos@fluxcode.net>
+Source: http://fluxcode.net/projects/wmgtemp
 
 Files: *
 Copyright: 2001-2007, Roger Dunce <kronos@fluxcode.net>
