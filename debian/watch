@@ -1,2 +1,2 @@
 version=3
-http://www.fluxcode.net/ wmgtemp-(.*)\.(tar.bz2|tar.gz)
+http://fluxcode.net/projects/wmgtemp http://fluxcode.net/files/wmgtemp-(\d[\d.]*)\.(?:zip|tgz|tbz2|txz|tar\.(?:gz|bz2|xz))
