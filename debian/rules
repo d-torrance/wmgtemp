@@ -3,6 +3,10 @@
 %:
 	dh $@
 
+override_dh_auto_build:
+	dh_auto_build -- CFLAGS="$(shell dpkg-buildflags --get CFLAGS)" \
+		LDFLAGS="$(shell dpkg-buildflags --get LDFLAGS)"
+
 override_dh_auto_install:
 	dh_auto_install -- INSTDIR=/usr/bin MANINSTDIR=/usr/share/man/man1
 
