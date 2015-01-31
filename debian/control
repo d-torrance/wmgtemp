@@ -2,7 +2,8 @@ Source: wmgtemp
 Section: utils
 Priority: extra
 Maintainer: Doug Torrance <dtorrance@monmouthcollege.edu>
-Build-Depends: debhelper (>= 7), libsensors4-dev, libx11-dev, libxext-dev, libxpm-dev
+Build-Depends: debhelper (>= 9), libsensors4-dev, libx11-dev, libxext-dev,
+ libxpm-dev
 Standards-Version: 3.8.4
 Homepage: http://www.fluxcode.net
 
