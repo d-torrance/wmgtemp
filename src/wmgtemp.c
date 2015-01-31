@@ -50,14 +50,7 @@
 
 #define DEBUG 0 /* 0 disable 1 enable  */
 
-// Local sensors type defines.
-#define VIA686A  0
-#define W83781D  1
-#define W83627HF 2
-#define AS99127F 3
-#define ADM1021  4
-
-#define OPT_STRING	"g:s:hH:w:m:M:a:e:u:t"
+#define OPT_STRING "g:s:hH:w:m:M:a:e:u:t"
 
 #define TEMPTOFAHRENHEIT(t) ((int)((t * (1.8) + 32)))
 #define TEMPTOKELVIN(t)     ((int)(t + 273))
@@ -88,7 +81,6 @@ inline void cycle_temptype();
 
 /* Globals */
 int delay      = 1;
-short chiptype = -1;	
 const sensors_chip_name *name;
 char *exec_app = NULL;
 
@@ -122,80 +114,52 @@ int main(int argc, char **argv) {
   int i = 0;
   short tmp_swap;
 
+  int feature1 = 0;
+  int feature2 = 0;
+  const sensors_feature_data* feature = NULL;
+  short chip_found = -1;
+
   BitOn(SENSOR_DISP, WARN_NONE);
   BitOn(SENSOR_DISP, TSCALE_CELCIUS);
   BitOn(SENSOR_DISP, GRAPH_LINE);
+
+  //  *conffname = "/etc/sensors.conf"; 
 
   if(!process_config(argc, argv)) {
     exit(-1);
   }
   
   if(!init_sensors()) {
-    printf("wmgtemp: Error initilising lm_sensors.");
     exit(-1);
   }
   
   /* Get the chip name */
   name = sensors_get_detected_chips(&chip_nr);
-  while(chiptype == -1 && name != NULL) {
-    if(!strcmp(name->prefix, SENSORS_VIA686A_PREFIX)) {
-      /* set the chip name */
-      chipname = SENSORS_VIA686A_PREFIX;
-      BitOn(SENSOR_DISP, CPU);
-      BitOn(SENSOR_DISP, SYS);
-      SENSOR_DEF_CPU = SENSORS_VIA686A_TEMP2;
-      SENSOR_DEF_SYS = SENSORS_VIA686A_TEMP;
-      chiptype = VIA686A;
-
-      /*
-      sensors_get_feature(*name, SENSORS_VIA686A_TEMP2_OVER, &cpu_limit);
-      sensors_get_feature(*name, SENSORS_VIA686A_TEMP_OVER, &sys_limit);
-      printf("cpu limit: %f", cpu_limit);
-      printf("sys limit: %f", sys_limit);
-      */
-    }
-    else if(!strcmp(name->prefix, SENSORS_ADM1021_PREFIX)) {
-      chipname = SENSORS_ADM1021_PREFIX;
-      BitOn(SENSOR_DISP, CPU);
-      BitOn(SENSOR_DISP, SYS);
-      SENSOR_DEF_CPU = SENSORS_ADM1021_REMOTE_TEMP;
-      SENSOR_DEF_SYS = SENSORS_ADM1021_TEMP;
-      chiptype = ADM1021;
-    }
-    else if(!strcmp(name->prefix, SENSORS_W83781D_PREFIX)) {
-      chipname = SENSORS_W83781D_PREFIX;
-      BitOn(SENSOR_DISP, CPU);
-      BitOn(SENSOR_DISP, SYS);
-      SENSOR_DEF_CPU = SENSORS_W83781D_TEMP2;
-      SENSOR_DEF_SYS = SENSORS_W83781D_TEMP1;
-      chiptype = W83781D;
-    }
-    else if(!strcmp(name->prefix, SENSORS_AS99127F_PREFIX)) {
-      chipname = SENSORS_AS99127F_PREFIX;
-      BitOn(SENSOR_DISP, CPU);
-      BitOn(SENSOR_DISP, SYS);
-      SENSOR_DEF_CPU = SENSORS_W83781D_TEMP2;
-      SENSOR_DEF_SYS = SENSORS_W83781D_TEMP1;
-      chiptype = AS99127F;
-    }
-    else if(!strcmp(name->prefix, SENSORS_W83627HF_PREFIX)) {
-      /* The lm_sensors W83781D driver is compatible with the Winbond W83627HF chip 
-	 so we'll use the same options, at least until the chips.h header file includes
-	 the W83627HF's defines -- we could provide these ourselves but they may 
-	 conflict with a later version of the sensors library */
-      chipname = SENSORS_W83627HF_PREFIX;
-      BitOn(SENSOR_DISP, CPU);
-      BitOn(SENSOR_DISP, SYS);
-      SENSOR_DEF_CPU = SENSORS_W83781D_TEMP2;
-      SENSOR_DEF_SYS = SENSORS_W83781D_TEMP1;
-      chiptype = W83627HF;
-    }
+  while(name != NULL && chip_found == -1) {
+    feature1 = feature2 = 0;
     
-    if(chiptype == -1) 
+    while((feature = sensors_get_all_features(*name, &feature1, &feature2)) != NULL) {
+      if(strcmp(feature->name, "temp1") == 0 && sensors_get_ignored(*name, feature->number)) {
+	SENSOR_DEF_CPU = feature->number;
+	BitOn(SENSOR_DISP, CPU);
+	chip_found = 1;
+      }
+      if(strcmp(feature->name, "temp2") == 0 && sensors_get_ignored(*name, feature->number)) {
+	SENSOR_DEF_SYS = feature->number;
+	BitOn(SENSOR_DISP, SYS);
+	chip_found = 1;
+      }
+    }
+
+    if(chip_found == 1) {
+      chipname = name->prefix;
+    }
+    else {
       name = sensors_get_detected_chips(&chip_nr);
+    }
   }
-  if(chiptype == -1) {
-    fprintf(stderr,"wmgtemp: Chip not supported.\n");
+  if(chip_found == -1) {
+    fprintf(stderr,"wmgtemp: Unable to find temperature sensing feature.\n");
     exit(0);
   }
 
@@ -485,31 +449,39 @@ int recompute_range(double cpu_high, double cpu_low, double sys_high, double sys
   
   // --------
   if(IsOn(SENSOR_DISP, CPU) && IsOn(SENSOR_DISP, SYS)) {
-    if((cpu_high < (range_upper - range_step) && sys_high < (range_upper - range_step)) && (range_upper - range_step) >= display_max) {
+    if((cpu_high < (range_upper - range_step) && 
+	sys_high < (range_upper - range_step)) && 
+       (range_upper - range_step) >= display_max) {
       range_upper -= range_step;
       modified = 1;
     }
-    if((cpu_low > (range_lower + range_step) && sys_low > (range_lower + range_step)) && (range_lower + range_step) <= display_min ) {  
+    if((cpu_low > (range_lower + range_step) && 
+	sys_low > (range_lower + range_step)) && 
+       (range_lower + range_step) <= display_min ) {  
       range_lower += range_step;  
       modified = 1;  
     }  
   }
   else if(IsOn(SENSOR_DISP, CPU) && !IsOn(SENSOR_DISP, SYS)) {
-    if(cpu_high < (range_upper - range_step) && (range_upper - range_step) >= display_max) {
+    if(cpu_high < (range_upper - range_step) && 
+       (range_upper - range_step) >= display_max) {
       range_upper -= range_step;
       modified = 1;
     }    
-    if(cpu_low > (range_lower + range_step) && (range_lower + range_step) <= display_min) { 
+    if(cpu_low > (range_lower + range_step) && 
+       (range_lower + range_step) <= display_min) { 
       range_lower += range_step;  
       modified = 1;  
     } 
   }
   else if(!IsOn(SENSOR_DISP, CPU) && IsOn(SENSOR_DISP, SYS)) {
-    if(sys_high < (range_upper - range_step) && (range_upper - range_step) >= display_max) {
+    if(sys_high < (range_upper - range_step) && 
+       (range_upper - range_step) >= display_max) {
       range_upper -= range_step;
       modified = 1;
     }    
-    if(sys_low > (range_lower + range_step) && (range_lower + range_step) <= display_min) { 
+    if(sys_low > (range_lower + range_step) && 
+       (range_lower + range_step) <= display_min) { 
       range_lower += range_step;  
       modified = 1;  
     }
@@ -595,25 +567,23 @@ int init_sensors() {
   FILE *config_file;
   int res;
 
-  /* Initialise sensors using sensors config file */
   config_file = fopen("/etc/sensors.conf", "r");
+
+  if(config_file == NULL) {
+    fprintf(stderr, "Error opening /etc/sensors.conf\n");
+    return 0;
+  }
+
   res = sensors_init(config_file);
 
   if(res != 0) {
-    config_file = fopen("/usr/etc/sensors.conf", "r");
-    res = sensors_init(config_file);
-
-    if(res != 0) {
-      config_file = fopen("/usr/local/etc/sensors.conf", "r");
-      res = sensors_init(config_file);
-
-      if(res != 0) {
-	fprintf(stderr,"%s\n", sensors_strerror(res));
-	return 0;
-      }
-    }
+    fprintf(stderr,"Error initializing sensors: %s\n", sensors_strerror(res));
+    return 0;
   }
-  fclose(config_file);
+
+  if(fclose(config_file))
+    perror("Error closing sensors.conf");
+
   return 1;
 }
 
@@ -937,3 +907,4 @@ int process_config(int argc, char **argv) {
 
   return parse_ok;
 }
+
