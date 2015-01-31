@@ -1,5 +1,0 @@
-o  Including a blank line in the rc file causes a Segmentation Fault. 
-   I believe this is a problem in wmgeneral, this is not much of a 
-   concern to me at this time as I hope to move the rc file
-   over to using libPropList which should resolve this issue.
-

@@ -25,6 +25,11 @@ show temperatures using SCALE temperature scale. SCALE=celcius, fahrenheit or ke
 .br
 \fBDefault\fP: celcius
 .TP
+.B \-S, \-\-sensorconf=PATH
+specify the PATH to the lm_sensors config
+.br
+\fBDefault\fP: /etc/sensors.conf
+.TP
 .B \-g, \-\-graph=STYLE
 display graph as STYLE. STYLE=line or block.
 .br
@@ -71,6 +76,12 @@ set the feature for CPU
 set the feature for SYS
 .br
 \fBDefault\fP: temp2
+
+.TP
+.B \-c, \-\-chip=CHIP
+specify the chip sensor to use
+.br
+\fBDefault\fP: auto
 
 .TP
 .B \-a, \-\-execat=TEMP
