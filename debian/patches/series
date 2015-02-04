@@ -1,4 +1,4 @@
 fix_hyphens_in_wmgtemp.1.patch
-001_sensors.conf.diff
+sensors.conf.patch
 update_makefile.patch
 fix_-Waggressive-loop-optimizations.patch

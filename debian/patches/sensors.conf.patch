@@ -1,11 +1,10 @@
-#
-# Description: use sensors.conf autodetection instead of providing a
-#              default value
-# Author: Aurelien Jarno <aurel32@debian.org>
-#
---- wmgtemp-1.1.orig/src/wmgtemp.c
-+++ wmgtemp-1.1/src/wmgtemp.c
-@@ -663,11 +663,15 @@ int init_sensors() {
+Description: Autodetect sensors.conf instead of providing default value.
+Author: Aurelien Jarno <aurel32@debian.org>
+Last-Update: 2015-02-03
+
+--- a/src/wmgtemp.c
++++ b/src/wmgtemp.c
+@@ -663,11 +663,15 @@
    FILE *config_file;
    int res;
  
@@ -25,7 +24,7 @@
    }
  
    res = sensors_init(config_file);
-@@ -677,7 +681,7 @@ int init_sensors() {
+@@ -677,7 +681,7 @@
      return 0;
    }
  
@@ -34,7 +33,7 @@
      perror("Error closing sensors config");
  
    return 1;
-@@ -688,7 +692,7 @@ void display_usage() {
+@@ -688,7 +692,7 @@
  	 "Usage: wmgtemp [options]\n" \
  	 "Options:\n" \
  	 "   -S, --sensorconf=PATH  Specify sensors config file PATH\n" \
@@ -43,7 +42,7 @@
  	 "   -s, --scale=SCALE      Display temperatures in SCALE\n" \
  	 "                          SCALE=kelvin, fahrenheit\n" \
  	 "                          [Default: celcius]\n" \
-@@ -950,9 +954,6 @@ int process_config(int argc, char **argv
+@@ -950,9 +954,6 @@
    if(rc_chip != NULL) {
      sensor_chip = strdup(rc_chip);
    }
