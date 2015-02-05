@@ -1,3 +1,39 @@
+wmgtemp (1.1-2) UNRELEASED; urgency=medium
+
+  * New maintainer (Closes: #XXX).
+  * debian/compat
+    - Bump to 9.
+  * debian/control
+    - Bump versioned dependency on debhelper to >=9.
+    - Bump Standards-Version to 3.9.6.
+    - Update Homepage.
+    - Add Vcs-*.
+  * debian/copyright
+    - Remove trailing whitespace.
+    - Add self to Copyright for debian/*.
+    - Update header paragraph.
+  * debian/patches/000_fix_hypens_in_wmtemp.1.diff
+    - Rename to fix_hyphens_in_wmgtemp.1.patch, update header to DEP3,
+      and refresh.
+  * debian/patches/001_sensors.conf.diff
+    - Rename to sensors.conf.patch, update header to DEP3, and refresh.
+  * debian/patches/fix_-Waggressive-loop-optimizations.patch
+    - Fix compiler warning.
+  * debian/patches/update_makefile.patch
+    - Update install targets to use DESTDIR variable and create binary
+      installation directory.
+    - Honor *FLAGS variables during build.
+  * debian/rules
+    - Add get-orig-source target.
+    - Update to use dh.
+    - Add override_dh_auto_install target to set installation directories.
+    - Add override_dh_auto_build target to use CFLAGS and LDFLAGS from
+      dpkg-buildflags.
+  * debian/watch
+    - Update with new location.
+
+ -- Doug Torrance <dtorrance@monmouthcollege.edu>  Wed, 04 Feb 2015 21:59:21 -0600
+
 wmgtemp (1.1-1) unstable; urgency=low
 
   * QA upload.
