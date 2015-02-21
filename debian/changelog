@@ -41,7 +41,7 @@ wmgtemp (1.1-1) unstable; urgency=low
   * Remove obsolete parts of descriptions about i2c-source.
   * Fix debian/watch to also look for .tar.gz files (Closes: #596101).
   * Remove 000_fix_on_src_wmtemp.c.diff (fixed upstream).
-  * Add 001_use_sensors3.conf.diff to use /etc/sensors3.conf instead of 
+  * Add 001_use_sensors3.conf.diff to use /etc/sensors3.conf instead of
     /etc/sensors.conf.
 
  -- Aurelien Jarno <aurel32@debian.org>  Mon, 07 Feb 2011 19:22:37 +0100
@@ -49,51 +49,53 @@ wmgtemp (1.1-1) unstable; urgency=low
 wmgtemp (0.8-1) unstable; urgency=low
 
   * QA upload.
-  * Switch to dpkg-source 3.0 (quilt) format
-  * debian/watch: Added.
-  * New upstream release (0.8) (Closes: #454492, #465335)
-  * debian/control: 
-    + Debhelper updated to >=7
-    + Maintainer field set to Debian QA Group
-    + Added ${misc:Depends} to avoid lintian W: debhelper-but-no-misc-depends
-    + Bump Standards-Version to 3.8.4
-    + Added 'Homepage' field.
-    + Priority downgrade to 'extra' because depends on 'lm-sensors' which is
-      extra. Filed bug to ftp.debian.org #568356
-  * debian/rules:
-    + export DH_COMPAT was removed
-    + s/dh_clean -k/dh_prep/ to avoid lintian W: dh-clean-k-is-deprecated
-  * Menu section chaged from 'Apps/System' to 'Applications/System/Monitoring'
-    to get rid of lintian W: menu-item-uses-apps-section
-  * debian/copyright: Migrated to DEP-5 format.
-  * debian/patches:
-    + 000_fix_on_src_wmtemp.c.diff: Add missing '('
-    + 000_fix_hypens_in_wmtemp.1.diff: Fix hyphen in manpage
+  * Switch to dpkg-source 3.0 (quilt) format.
+  * debian/watch
+    - Add.
+  * New upstream release (Closes: #454492, #465335).
+  * debian/control
+    - Update debhelper to >=7.
+    - Set Maintainer field to Debian QA Group.
+    - Add ${misc:Depends} to avoid lintian W: debhelper-but-no-misc-depends.
+    - Bump Standards-Version to 3.8.4.
+    - Add 'Homepage' field.
+    - Priority downgrade to 'extra' because depends on 'lm-sensors' which is
+      extra. Filed bug to ftp.debian.org #568356.
+  * debian/rules
+    - Remove export DH_COMPAT.
+    - s/dh_clean -k/dh_prep/ to avoid lintian W: dh-clean-k-is-deprecated.
+  * Change menu section from 'Apps/System' to 'Applications/System/Monitoring'
+    to get rid of lintian W: menu-item-uses-apps-section.
+  * debian/copyright
+    - Migrate to DEP-5 format.
+  * debian/patches
+    - 000_fix_on_src_wmtemp.c.diff: Add missing '('.
+    - 000_fix_hypens_in_wmtemp.1.diff: Fix hyphen in manpage.
 
  -- Dario Minnucci <midget@debian.org>  Thu, 04 Feb 2010 08:32:12 +0100
 
 wmgtemp (0.7-1) unstable; urgency=low
 
   * New upstream version.
-    + Obsoleted the patch that was added to fix #185512, since a run-time
+    - Obsolete the patch that was added to fix #185512, since a run-time
       option for swapping temperatures now exists.
-    + Obsoleted the patch that fixed a multi-line string in printf.
-    + Obsoleted/updated the patch for the manual page to avoid listing
+    - Obsolete the patch that fixed a multi-line string in printf.
+    - Obsolete/update the patch for the manual page to avoid listing
       chipsets and instead point to lm_sensors manuals, and fix typos.
-  * Cleaned up the packaging a bit.
+  * Clean up the packaging a bit.
 
  -- Josip Rodin <joy-packages@debian.org>  Mon, 11 Sep 2006 02:14:31 +0200
 
 wmgtemp (0.6-5) unstable; urgency=low
 
-  * Adopting the package, closes: #349201.
+  * New maintainer (Closes: #349201).
 
  -- Josip Rodin <joy-packages@debian.org>  Mon, 11 Sep 2006 02:05:33 +0200
 
 wmgtemp (0.6-4) unstable; urgency=low
 
   * Orphaning the package.
-  * NMU ACK. (closes: bug#347099)
+  * NMU ACK. (Closes: #347099)
 
  -- LENART Janos <ocsi@debian.org>  Sat, 21 Jan 2006 15:17:34 +0100
 
@@ -101,48 +103,48 @@ wmgtemp (0.6-3.1) unstable; urgency=low
 
   * Non-maintainer upload.
   * Replace build-dependency on xlibs-dev with an explicit build-dependency
-    on each required package. (Closes: #347099)
+    on each required package (Closes: #347099).
 
  -- Steinar H. Gunderson <sesse@debian.org>  Sat, 21 Jan 2006 15:01:38 +0100
 
 wmgtemp (0.6-3) unstable; urgency=high
 
-  * Linking to libsensors3.                         (closes: Bug#237348)
-  * Changed Arch: to any. Dep: will do it (I hope). (closes: Bug#238252)
+  * Link to libsensors3 (Closes: #237348).
+  * Change Arch: to any. Dep: will do it (I hope) (Closes: #238252).
 
  -- Lenart Janos <ocsi@debian.org>  Sun, 21 Mar 2004 12:57:14 +0100
 
 wmgtemp (0.6-2) unstable; urgency=medium
 
-  * lm-sensors moved to Depends: in order to be sure /etc/sensors.conf
-    exists, closes: #201762
-  * Rebuild should have fixed the wacky Depends: on libsensors-1debian1,
-    closes: #211081
-  * Lot's of thank to Joy for his great work on wmgtemp while I am away.
-    closes: #191538, #197022, #185512, #185513, #185514.
+  * Move lm-sensors to Depends: in order to be sure /etc/sensors.conf
+    exists (Closes: #201762).
+  * Rebuild should have fixed the wacky Depends: on libsensors-1debian1
+    (Closes: #211081).
+  * Lots of thank to Joy for his great work on wmgtemp while I am away.
+    (Closes: #191538, #197022, #185512, #185513, #185514).
 
  -- Lenart Janos <ocsi@debian.org>  Fri, 26 Dec 2003 12:05:27 +0100
 
 wmgtemp (0.6-1.2) unstable; urgency=high
 
   * Non-maintainer upload, to recompile against proper libsensors-dev
-    and eliminate obsoleted libsensors1 dependency, closes: #197022.
+    and eliminate obsoleted libsensors1 dependency (Closes: #197022).
 
  -- Josip Rodin <joy-packages@debian.org>  Fri, 27 Jun 2003 19:00:47 +0200
 
 wmgtemp (0.6-1.1) unstable; urgency=low
 
   * Non-maintainer upload, approved by the maintainer.
-  * Recompiled against the new libsensors-dev, plus a little patch
+  * Recompile against the new libsensors-dev, plus a little patch
     to remove a multi-line string in printf which doesn't work with
-    new GCC, closes: #191538.
-  * Updated upstream URL, closes: #185514.
-  * Removed the duplication in the manual page and (after cross-checking)
-    merged it into the upstream file, closes: #185513.
+    new GCC (Closes: #191538).
+  * Update upstream URL (Closes: #185514).
+  * Remove the duplication in the manual page and (after cross-checking)
+    merge it into the upstream file (Closes: #185513).
   * Remove mention of chips from the description since that code was
     removed, it's now generic.
   * Use temp1 for system and temp2 for processor temperature with via686a,
-    like the old version did, closes: #185512.
+    like the old version did (Closes: #185512).
     I've got an Abit KG7, the author has Abit KT7 -- these two boards should
     have the same south bridge (VIA 686B), so if the settings really differ,
     then the whole idea of guessing which sensor is which seems rather
@@ -152,27 +154,27 @@ wmgtemp (0.6-1.1) unstable; urgency=low
 
 wmgtemp (0.6-1) unstable; urgency=low
 
-  * New upstream release.                           (closes: Bug#169498)
+  * New upstream release (Closes: #169498).
 
  -- Lenart Janos <ocsi@debian.org>  Tue, 11 Mar 2003 21:36:57 +0100
 
 wmgtemp (0.5-4) unstable; urgency=low
 
-  * Typo fixed in the description.                  (closes: Bug#125492)
-  * Upgraded Standards-Version.
+  * Fix typo in the description (Closes: #125492).
+  * Upgrade Standards-Version.
 
  -- Lenart Janos <ocsi@debian.org>  Sat, 22 Dec 2001 16:25:10 +0100
 
 wmgtemp (0.5-3) unstable; urgency=low
 
-  * Added Build-Depends: xlibs-dev.                 (closes: Bug#123153)
+  * Add Build-Depends: xlibs-dev (Closes: #123153).
 
  -- Lenart Janos <ocsi@debian.org>  Mon, 10 Dec 2001 22:08:12 +0100
 
 wmgtemp (0.5-2) unstable; urgency=low
 
-  * Fixed menu by Josip Rodin <joy@debian.org>.     (closes: Bug#119945)
-  * Emacs-thingy removed from this changelog.
+  * Fix menu by Josip Rodin <joy@debian.org> (Closes: #119945).
+  * Remove Emacs cruft from this changelog.
 
  -- Lenart Janos <ocsi@debian.org>  Sat, 17 Nov 2001 13:04:58 +0100
 
@@ -185,42 +187,42 @@ wmgtemp (0.5-1) unstable; urgency=low
 wmgtemp (0.4-1) unstable; urgency=low
 
   * New upstream release.
-  * Added suggestion against i2c-source.
-  * Added example.
-  * Changed description.
+  * Add suggestion against i2c-source.
+  * Add example.
+  * Change description.
 
  -- Lenart Janos <ocsi@debian.org>  Tue, 17 Apr 2001 21:17:39 +0200
 
 wmgtemp (0.3-3) unstable; urgency=low
 
-  * Upgraded Standards-Version.
-  * Converted to use debhelper v3.
+  * Upgrade Standards-Version.
+  * Convert to use debhelper v3.
 
  -- Lenart Janos <ocsi@debian.org>  Sat, 31 Mar 2001 18:45:23 +0200
 
 wmgtemp (0.3-2) unstable; urgency=low
 
-  * Added manpage, currently in the diff only.       (closes: Bug#88697)
-  * Removed dh_testversion from debian/rules.
+  * Add manpage, currently in the diff only (Closes: #88697).
+  * Remove dh_testversion from debian/rules.
 
  -- Lenart Janos <ocsi@debian.org>  Wed, 28 Mar 2001 21:11:00 +0200
 
 wmgtemp (0.3-1) unstable; urgency=low
 
   * New upstream release.
-  * Makefile's patch removed from diff since it's now included in the
+  * Remove Makefile patch from diff since it's now included in the
     upstream.
 
  -- Lenart Janos <ocsi@debian.org>  Tue,  6 Mar 2001 05:54:28 +0100
 
 wmgtemp (0.1-1.1) unstable; urgency=medium
 
-  * Moved from /usr/X11R6/bin to /usr/bin
+  * Move from /usr/X11R6/bin to /usr/bin.
 
  -- Lenart Janos <ocsi@debian.org>  Sat, 24 Feb 2001 17:28:02 +0100
 
 wmgtemp (0.1-1) unstable; urgency=low
 
-  * Initial Release.                                 (closes: Bug#87146)
+  * Initial release (Closes: #87146).
 
  -- Lenart Janos <ocsi@debian.org>  Fri, 23 Feb 2001 00:29:54 +0100
