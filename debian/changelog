@@ -10,7 +10,7 @@ wmgtemp (1.1-2) unstable; urgency=medium
     - Add Vcs-*.
   * debian/copyright
     - Remove trailing whitespace.
-    - Add self to Copyright for debian/*.
+    - Add myself to Copyright field for debian/*.
     - Update header paragraph.
   * debian/patches/000_fix_hypens_in_wmtemp.1.diff
     - Rename to fix_hyphens_in_wmgtemp.1.patch, update header to DEP3,
@@ -94,10 +94,9 @@ wmgtemp (0.6-5) unstable; urgency=low
 
 wmgtemp (0.6-4) unstable; urgency=low
 
-  * Orphaning the package.
-  * NMU ACK. (Closes: #347099)
+  * Orphan the package.
 
- -- LENART Janos <ocsi@debian.org>  Sat, 21 Jan 2006 15:17:34 +0100
+ -- Lenart Janos <ocsi@debian.org>  Sat, 21 Jan 2006 15:17:34 +0100
 
 wmgtemp (0.6-3.1) unstable; urgency=low
 
@@ -110,7 +109,8 @@ wmgtemp (0.6-3.1) unstable; urgency=low
 wmgtemp (0.6-3) unstable; urgency=high
 
   * Link to libsensors3 (Closes: #237348).
-  * Change Arch: to any. Dep: will do it (I hope) (Closes: #238252).
+  * Change Arch: to "any" to allow the package to be built on all
+    supported architectures in Debian (Closes: #238252).
 
  -- Lenart Janos <ocsi@debian.org>  Sun, 21 Mar 2004 12:57:14 +0100
 
@@ -120,7 +120,7 @@ wmgtemp (0.6-2) unstable; urgency=medium
     exists (Closes: #201762).
   * Rebuild should have fixed the wacky Depends: on libsensors-1debian1
     (Closes: #211081).
-  * Lots of thank to Joy for his great work on wmgtemp while I am away.
+  * Many thanks to Joy for his great work on wmgtemp while I am away.
     (Closes: #191538, #197022, #185512, #185513, #185514).
 
  -- Lenart Janos <ocsi@debian.org>  Fri, 26 Dec 2003 12:05:27 +0100
@@ -210,14 +210,13 @@ wmgtemp (0.3-2) unstable; urgency=low
 wmgtemp (0.3-1) unstable; urgency=low
 
   * New upstream release.
-  * Remove Makefile patch from diff since it's now included in the
-    upstream.
+  * Remove Makefile patch from diff since it's now included upstream.
 
  -- Lenart Janos <ocsi@debian.org>  Tue,  6 Mar 2001 05:54:28 +0100
 
 wmgtemp (0.1-1.1) unstable; urgency=medium
 
-  * Move from /usr/X11R6/bin to /usr/bin.
+  * Move wmgtemp binary from /usr/X11R6/bin to /usr/bin.
 
  -- Lenart Janos <ocsi@debian.org>  Sat, 24 Feb 2001 17:28:02 +0100
 
